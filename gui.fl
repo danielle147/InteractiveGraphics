@@ -1,0 +1,426 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+class GUI {open
+} {
+  decl {\#include "scene.h"} {}
+  Function {GUI()} {open
+  } {
+    Fl_Window uiw {
+      label {Control Center} open
+      xywh {751 456 870 657} type Double visible
+    } {
+      Fl_Button Load {
+        label Load
+        callback {LoadFile_cb()}
+        xywh {289 49 85 30}
+      }
+      Fl_File_Input Filename {
+        label {Load file:}
+        callback {ReadFile_cb()}
+        xywh {85 44 185 37}
+      }
+      Fl_File_Input SaveTo {
+        label {Save file:}
+        callback {SaveTo_cb()}
+        xywh {85 80 185 39}
+      }
+      Fl_Button Save {
+        label Save
+        callback {Save_cb()}
+        xywh {289 87 85 30}
+      }
+      Fl_Button {} {
+        label {Edge Detect}
+        callback {edgeDetect_cb()}
+        xywh {60 122 315 40}
+      }
+      Fl_Input BrightPercent {
+        label {Adjust Brightness by %: }
+        callback {bright_cb()}
+        xywh {220 169 60 27}
+      }
+      Fl_Button {} {
+        label Adjust
+        callback {AdjustBrightness_cb()}
+        xywh {295 166 80 35}
+      }
+      Fl_Button {} {
+        label {Click to draw my name}
+        callback {drawName_cb()}
+        xywh {60 210 315 40}
+      }
+      Fl_Button VisualizeButton {
+        label {Visualize Camera}
+        callback {visual_cb()}
+        xywh {542 538 124 32}
+      }
+      Fl_Button {} {
+        label Up
+        callback {up_cb()}
+        xywh {570 350 65 50}
+      }
+      Fl_Button {} {
+        label Down
+        callback {down_cb()}
+        xywh {570 402 65 50}
+      }
+      Fl_Button {} {
+        label Left
+        callback {left_cb()}
+        xywh {507 402 58 51}
+      }
+      Fl_Button {} {
+        label Right
+        callback {right_cb()}
+        xywh {638 399 64 53}
+      }
+      Fl_Button {} {
+        label Front
+        callback {front_cb()}
+        xywh {505 465 90 30}
+      }
+      Fl_Button {} {
+        label Back
+        callback {back_cb()}
+        xywh {605 465 95 30}
+      }
+      Fl_Button {} {
+        label {Zoom in}
+        callback {zoomin_cb()}
+        xywh {720 424 64 30}
+      }
+      Fl_Button {} {
+        label {Zoom out}
+        callback {zoomout_cb()}
+        xywh {789 423 64 30}
+      }
+      Fl_Button {} {
+        label {Pan left}
+        callback {panl_cb()}
+        xywh {722 461 64 30}
+      }
+      Fl_Button {} {
+        label {Tilt up}
+        callback {tiltl_cb()}
+        xywh {722 496 64 30}
+      }
+      Fl_Button {} {
+        label {Roll left}
+        callback {rolll_cb()}
+        xywh {722 530 64 30}
+      }
+      Fl_Button {} {
+        label {Play SW}
+        callback {play_cb()}
+        xywh {505 500 90 30}
+      }
+      Fl_Input pointLightx {
+        label {Point light position (x,y,z):}
+        callback {pointLightx_cb()}
+        xywh {191 295 59 35}
+      }
+      Fl_Input pointLighty {
+        callback {pointLighty_cb()}
+        xywh {250 295 55 35}
+      }
+      Fl_Input pointLightz {
+        callback {pointLightz_cb()}
+        xywh {303 295 60 35}
+      }
+      Fl_Input ka {
+        label {Ambient factor: }
+        callback {ka_cb()}
+        xywh {130 355 95 30}
+      }
+      Fl_Input es {
+        label {Specular exponent: }
+        callback {es_cb()}
+        xywh {157 390 68 30}
+      }
+      Fl_Button {} {
+        label Draw
+        callback {drawPointLight_cb()}
+        xywh {375 295 50 30}
+      }
+      Fl_Button SM1 {
+        label SM1
+        callback {sm1_cb()}
+        xywh {30 444 55 25}
+      }
+      Fl_Button SM2 {
+        label SM2
+        callback {sm2_cb()}
+        xywh {85 444 55 25}
+      }
+      Fl_Button SM3 {
+        label SM3
+        callback {sm3_cb()}
+        xywh {140 444 55 25}
+      }
+      Fl_Button SM2Play {
+        label {SM2 Moving Light}
+        callback {SM2Play_cb()}
+        xywh {300 355 125 35}
+      }
+      Fl_Button SM3Play {
+        label {SM3 Moving Light}
+        callback {SM3Play_cb()}
+        xywh {300 398 125 35}
+      }
+      Fl_Button SM2SM3 {
+        label {Comparing SM2/3}
+        callback {SM2SM3_cb()}
+        xywh {300 440 125 30}
+      }
+      Fl_Button bilinear {
+        label {Bilinear texture lookup}
+        callback {bilinear_cb();}
+        xywh {30 495 205 30}
+      }
+      Fl_Button nearest {
+        label {Nearest naighbor texture lookup}
+        callback {nearest_cb()}
+        xywh {30 535 205 35}
+      }
+      Fl_Button repeat {
+        label {Repitation tiling}
+        callback {repeat_cb()}
+        xywh {244 494 125 30}
+      }
+      Fl_Button mirror {
+        label {Mirror tiling}
+        callback {mirror_cb()}
+        xywh {244 540 125 30}
+      }
+      Fl_Button {} {
+        label Display
+        callback {display_cb()}
+        xywh {375 495 50 75}
+      }
+      Fl_Button {} {
+        label Shadow
+        callback {shadow_cb();}
+        xywh {195 444 64 25}
+      }
+      Fl_Button {} {
+        label {Play HW}
+        callback {playhw_cb()}
+        xywh {605 500 95 30}
+      }
+      Fl_Button {} {
+        label {Pan right}
+        callback {panr_cb()}
+        xywh {788 461 64 30}
+      }
+      Fl_Button {} {
+        label {Tilt down}
+        callback {tiltr_cb()}
+        xywh {788 496 64 30}
+      }
+      Fl_Button {} {
+        label {Roll right}
+        callback {rollr_cb()}
+        xywh {788 530 64 30}
+      }
+      Fl_Button {} {
+        label {EM SW}
+        callback {emsw_cb()}
+        xywh {720 387 64 30}
+      }
+      Fl_Button {} {
+        label Panorama
+        callback {panorama_cb()}
+        xywh {786 387 68 30}
+      }
+    }
+  }
+  Function {} {} {
+    code {scene = new Scene;} {}
+  }
+  Function {show()} {} {
+    code {uiw->show();} {}
+  }
+  Function {LoadFile_cb()} {open
+  } {
+    code {scene->LoadFile();} {}
+  }
+  Function {ReadFile_cb()} {open
+  } {
+    code {scene->ReadFile();} {}
+  }
+  Function {bright_cb()} {open
+  } {
+    code {scene->BrightPercent();} {}
+  }
+  Function {edgeDetect_cb()} {open
+  } {
+    code {scene->EdgeDetect();} {}
+  }
+  Function {Save_cb()} {open
+  } {
+    code {scene->SaveFile();} {}
+  }
+  Function {SaveTo_cb()} {open
+  } {
+    code {scene->SaveTo();} {}
+  }
+  Function {AdjustBrightness_cb()} {open
+  } {
+    code {scene->AdjustBrightness();} {}
+  }
+  Function {drawName_cb()} {open
+  } {
+    code {scene->DrawName();} {}
+  }
+  Function {visual_cb()} {open
+  } {
+    code {scene->Visualize();} {}
+  }
+  Function {up_cb()} {open
+  } {
+    code {scene->Up();} {}
+  }
+  Function {down_cb()} {open
+  } {
+    code {scene->Down();} {}
+  }
+  Function {left_cb()} {open
+  } {
+    code {scene->Left();} {}
+  }
+  Function {right_cb()} {open
+  } {
+    code {scene->Right();} {}
+  }
+  Function {front_cb()} {open
+  } {
+    code {scene->Front();} {}
+  }
+  Function {back_cb()} {open
+  } {
+    code {scene->Back();} {}
+  }
+  Function {panl_cb()} {open
+  } {
+    code {scene->PanLeft();} {}
+  }
+  Function {tiltl_cb()} {open
+  } {
+    code {scene->TiltUp();} {}
+  }
+  Function {rolll_cb()} {open
+  } {
+    code {scene->RollLeft();} {}
+  }
+  Function {zoomin_cb()} {open
+  } {
+    code {scene->ZoomIn();} {}
+  }
+  Function {zoomout_cb()} {open
+  } {
+    code {scene->ZoomOut();} {}
+  }
+  Function {play_cb()} {open
+  } {
+    code {scene->Play();} {}
+  }
+  Function {pointLightx_cb()} {open
+  } {
+    code {scene->pointLightx();} {}
+  }
+  Function {pointLighty_cb()} {open
+  } {
+    code {scene->pointLighty();} {}
+  }
+  Function {pointLightz_cb()} {open
+  } {
+    code {scene->pointLightz();} {}
+  }
+  Function {ka_cb()} {open
+  } {
+    code {scene->Ka();} {}
+  }
+  Function {es_cb()} {open
+  } {
+    code {scene->Es();} {}
+  }
+  Function {sm1_cb()} {open
+  } {
+    code {scene->SM1();} {}
+  }
+  Function {sm2_cb()} {open
+  } {
+    code {scene->SM2();} {}
+  }
+  Function {sm3_cb()} {open
+  } {
+    code {scene->SM3();} {}
+  }
+  Function {drawPointLight_cb()} {open
+  } {
+    code {scene->DrawPointLight();} {}
+  }
+  Function {SM2Play_cb()} {open
+  } {
+    code {scene->SM2Play();} {}
+  }
+  Function {SM3Play_cb()} {open
+  } {
+    code {scene->SM3Play();} {}
+  }
+  Function {SM2SM3_cb()} {open
+  } {
+    code {scene->SM2SM3();} {}
+  }
+  Function {bilinear_cb()} {open
+  } {
+    code {scene->Bilinear();} {}
+  }
+  Function {nearest_cb()} {open
+  } {
+    code {scene->Nearest();} {}
+  }
+  Function {repeat_cb()} {open
+  } {
+    code {scene->Repeat();} {}
+  }
+  Function {mirror_cb()} {open
+  } {
+    code {scene->Mirror();} {}
+  }
+  Function {display_cb()} {open
+  } {
+    code {scene->Display();} {}
+  }
+  Function {shadow_cb()} {open
+  } {
+    code {scene->Shadow();} {}
+  }
+  Function {playhw_cb()} {open
+  } {
+    code {scene->PlayHW();} {}
+  }
+  Function {panr_cb()} {open
+  } {
+    code {scene->PanRight();} {}
+  }
+  Function {tiltr_cb()} {open
+  } {
+    code {scene->TiltDown();} {}
+  }
+  Function {rollr_cb()} {open
+  } {
+    code {scene->RollRight();} {}
+  }
+  Function {emsw_cb()} {open
+  } {
+    code {scene->EMSW();} {}
+  }
+  Function {panorama_cb()} {open
+  } {
+    code {scene->Panorama();} {selected
+    }
+  }
+} 

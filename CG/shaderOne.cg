@@ -1,0 +1,293 @@
+
+struct VertexDataInput {
+	float4 vertex: POSITION;
+	float3 normal: NORMAL;
+	float3 color: COLOR;
+};
+
+struct VertexDataOutput {
+	float4 projv  : POSITION;
+	float4 color : COLOR;
+	float3 vertex: TEXCOORD0;
+	float3 normal: TEXCOORD1;
+};
+
+struct PixelDataOutput {
+	float4 color : COLOR0;
+};
+
+VertexDataOutput VertexMain(VertexDataInput vdi, 
+  uniform float4x4 modelViewProj, 
+  uniform float fraction, uniform float radius, uniform float3 center) {
+  
+  VertexDataOutput ret;
+  ret.color = float4(vdi.color, 1.0f);
+  ret.vertex = vdi.vertex.xyz;
+  ret.normal = vdi.normal;
+
+  //  morphing vertex to sphere
+  float3 m = vdi.vertex.xyz - center;
+  float d = radius - length(m);
+  m = normalize(m);
+  float3 mv = vdi.vertex + m * d * fraction;
+
+  //ret.color.rgb = (m + float3(1.0f, 1.0f, 1.0f))/2.0f;
+
+  ret.projv = mul(modelViewProj, float4(mv, 1.0f));
+
+  return ret;
+
+}
+
+TRIANGLE void GeometryMain(AttribArray<VertexDataOutput> tverts,
+	uniform float4x4 modelViewProj) {
+
+	emitVertex(tverts[0]);
+	emitVertex(tverts[1]);
+	emitVertex(tverts[2]);
+
+}
+
+TRIANGLE void GeometryMainSplitByArea(AttribArray<VertexDataOutput> tverts,
+	uniform float4x4 modelViewProj) {
+
+	// modified vertices	
+	VertexDataOutput vs[3], apex;
+	vs[0] = tverts[0];
+	vs[1] = tverts[1];
+	vs[2] = tverts[2];
+
+	// center of triangle
+	apex.vertex = (vs[0].vertex + vs[1].vertex + vs[2].vertex) / 3.0f;
+//	apex.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	apex.color = (vs[0].color + vs[1].color + vs[2].color)/3.0f;
+
+	// area of triangle
+	float area = length(cross(vs[1].vertex - vs[0].vertex, 
+		vs[2].vertex - vs[0].vertex));
+
+	// project modified vertices
+	vs[0].projv = mul(modelViewProj, float4(vs[0].vertex, 1.0f));
+	vs[1].projv = mul(modelViewProj, float4(vs[1].vertex, 1.0f));
+	vs[2].projv = mul(modelViewProj, float4(vs[2].vertex, 1.0f));
+	apex.projv = mul(modelViewProj, float4(apex.vertex, 1.0f));
+
+	if (area < 50.0f) {
+		// emit modified triangle
+		emitVertex(vs[0]);
+		emitVertex(vs[1]);
+		emitVertex(vs[2]);
+		return;
+	}
+
+
+	// emit modified triangle
+	emitVertex(vs[0]);
+	emitVertex(vs[1]);
+	emitVertex(apex);
+	emitVertex(vs[2]);
+	emitVertex(vs[0]);
+	return;
+		
+}
+
+TRIANGLE void GeometryMainSpike(AttribArray<VertexDataOutput> tverts,
+	uniform float4x4 modelViewProj) {
+
+	// modified vertices	
+	VertexDataOutput vs[3], apex;
+	vs[0] = tverts[0];
+	vs[1] = tverts[1];
+	vs[2] = tverts[2];
+
+	// center of triangle
+	float3 c = (vs[0].vertex + vs[1].vertex + vs[2].vertex) / 3.0f;
+	// normal at center
+	float3 n = (vs[0].normal + vs[1].normal + vs[2].normal) / 3.0f;
+	n = normalize(n);
+	// perimeter of triangle
+	float pt = length(vs[0].vertex - vs[1].vertex) +
+		length(vs[1].vertex - vs[2].vertex) +
+		length(vs[2].vertex - vs[0].vertex);
+	apex.vertex = c + n*pt/7.0f;
+	apex.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	apex.projv = mul(modelViewProj, float4(apex.vertex, 1.0f));
+
+	// project modified vertices
+	vs[0].projv = mul(modelViewProj, float4(vs[0].vertex, 1.0f));
+	vs[1].projv = mul(modelViewProj, float4(vs[1].vertex, 1.0f));
+	vs[2].projv = mul(modelViewProj, float4(vs[2].vertex, 1.0f));
+
+	// emit modified triangle
+	emitVertex(vs[0]);
+	emitVertex(vs[1]);
+	emitVertex(apex);
+	emitVertex(vs[2]);
+	emitVertex(vs[0]);
+	return;
+		
+}
+
+TRIANGLE void GeometryMainShrinkToHalf(AttribArray<VertexDataOutput> tverts,
+	uniform float4x4 modelViewProj) {
+
+	// modified vertices	
+	VertexDataOutput vs[3];
+	vs[0] = tverts[0];
+	vs[1] = tverts[1];
+	vs[2] = tverts[2];
+
+	// center of triangle
+	float3 c = (vs[0].vertex + vs[1].vertex + vs[2].vertex) / 3.0f;
+
+	// move vertices half way between center and old vertex position
+	vs[0].vertex =  (vs[0].vertex + c) /2.0f;
+	vs[1].vertex =  (vs[1].vertex + c) /2.0f;
+	vs[2].vertex =  (vs[2].vertex + c) /2.0f;
+
+	// project modified vertices
+	vs[0].projv = mul(modelViewProj, float4(vs[0].vertex, 1.0f));
+	vs[1].projv = mul(modelViewProj, float4(vs[1].vertex, 1.0f));
+	vs[2].projv = mul(modelViewProj, float4(vs[2].vertex, 1.0f));
+
+	// emit modified triangle
+	emitVertex(vs[0]);
+	emitVertex(vs[1]);
+	emitVertex(vs[2]);
+	return;
+
+	emitVertex(tverts[0]);
+	emitVertex(tverts[1]);
+	emitVertex(tverts[2]);
+	return;
+
+	
+}
+
+PixelDataOutput FragmentMainNew(VertexDataOutput pdi, 
+	uniform float3 eye) {
+
+  PixelDataOutput ret;
+
+  // eye vector
+  float3 ev = normalize(eye - pdi.vertex);
+  // normal
+  float3 n = normalize(pdi.normal);
+  // reflected vector
+  float3 rv = n*dot(n, ev)*2.0f - ev;
+
+//  ret.color.rgb = (rv + float3(1.0f, 1.0f, 1.0f))/2.0f;
+
+  
+  float3 P = pdi.vertex;
+  float3 planePoint = float3(-50.0f, -23.625f, -200.0f); //-50,-23.625,-200
+  float3 V0 = planePoint;
+  float3 planeNormal = float3(0.0f, 1.0f, 0.0f);
+  float3 rayDirection = normalize(rv);
+  float3 xaxis = float3(0.0f, 0.0f, 1.0f);
+  float3 yaxis = float3(1.0f, 0.0f, 0.0f);
+  float w = 100.0f;
+  float h = 100.0f;
+
+  float t = dot((planePoint - P), planeNormal) 
+		/ dot(rayDirection, planeNormal);
+  float3 intPoint = P + rayDirection * t;
+
+  float x = dot((intPoint - V0), xaxis);
+  float y = dot((intPoint - V0), yaxis);
+
+  int cx = x * 8.0f / w;
+  int cy = y * 8.0f / h;
+
+  if (t < 0.0f) {
+	ret.color.rgb = float3(1.0f, 0.0f, 0.0f); // no intersection with plane
+	ret.color.rgb = pdi.color.rgb;
+  }
+  else {
+	if (x < 0.0f || x > w || y < 0.0f || y > h) {
+		ret.color.rgb = float3(1.0f, 1.0f, 0.0f); // intersection with plane but not with quad
+		ret.color.rgb = pdi.color.rgb;
+	}
+	else {
+		ret.color.rgb = float3(0.0f, 1.0f, 0.0f); // intersection with quad
+		float3 reflectiveComponent;
+		if ((cx + cy) % 2 == 0)
+			reflectiveComponent = float3(1.0f, 1.0f, 1.0f);
+		else
+			reflectiveComponent = float3(0.0f, 0.0f, 0.0f);
+		ret.color.rgb = (pdi.color.rgb + reflectiveComponent)/2.0f;
+	}
+  }
+
+  return ret;
+
+  // below is my version of the reflection
+  /*PixelDataOutput ret;
+
+  float3 ev = normalize(eye - pdi.vertex);
+  float3 n = normalize(pdi.normal);
+  float3 rv = n*dot(n, ev)*2.0f - ev;
+  normalize(rv);
+  //float3 rv = reflect(ev,n);	// calculate reflected ray using the cg api
+
+  float3 bf = float3(0.5f,0.5f,0.5f);	// blend factor
+  float3 d = pdi.color;	// diffuse interpolated from input vertex colors
+
+  float3 distance = 5.0f;
+  float alpha = -1.0f;
+  //float rv_dot_n = dot(rv,n);
+  float3 r = d;
+
+  float epsilon = 0.000001f;
+
+  if(length(rv)!=0){
+  //if(rv_dot_n!=0){	// the ray is not parallel to the plane
+	//alpha = (distance - dot(pdi.vertex,n)) / dot(rv,n);
+	alpha = -pdi.vertex/rv;
+  }
+
+
+  //float3 alpha = -pdi.vertex/rv;	// alpha is the length from the pixel to the intersected point
+  
+
+  float3 intersection = pdi.vertex+alpha*rv;
+  normalize(intersection);
+  
+  if(alpha>=0.0f+epsilon){
+	if((fmod((intersection.x*10.0f+intersection.y*10.0f),2.0f))==0){
+	r = float3(255.0f,255.0f,255.0f);
+	}else{
+		r = float3(0.0f,0.0f,0.0f);
+	}
+  }
+
+  //ret.color.rgb = lerp(d,r,bf);
+  ret.color.rgb = bf*d+(float3(1.0f,1.0f,1.0f)-bf)*r;
+  //ret.color.rgb = bf*r/2.0f;
+  //ret.color.rgb = bf*d/2.0f;
+  //ret.color.rgb = (rv + float3(1.0f, 1.0f, 1.0f))/2.0f;
+
+  return ret;*/
+    
+}
+
+PixelDataOutput FragmentMain(VertexDataOutput pdi, 
+	uniform float blueHue, uniform float3 light) {
+
+  PixelDataOutput ret;
+  ret.color = pdi.color;
+  return ret;
+
+  float3 lv = normalize(light-pdi.vertex);
+
+  float kd = dot(pdi.normal, lv);
+  kd = (kd < 0.0f) ? 0.0f : kd;
+  float ka = 0.2f;
+  ret.color.rgb = float3(1.0f, 0.0, 0.0f) * (ka + (1-ka)*kd);
+  ret.color.a = 1.0f;
+
+  return ret;
+    
+}
+
+
